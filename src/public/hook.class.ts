@@ -89,6 +89,8 @@ class Hook implements IHook {
             .then((response) => {
                 console.warn('fetch', response.status);
                 return response.text();
+            }).then(function (raw) {
+                return raw;
             })
             .catch((reason) => reason);
     }
