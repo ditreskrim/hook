@@ -80,14 +80,12 @@ class Hook implements IHook {
     async send(payload: object) {
         console.warn('send', payload);
         const srv = [this.uri.origin,'webhook'].join('/');
-        return await fetch(srv, {
+        const now = srv;
+        return await fetch(`${srv}?time=${now}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            referrerPolicy: "unsafe-url",
-            credentials: "include",
-            redirect: "follow",
             body: {origin: window.location.href, ...payload}.serializeJSON(),
         })
             .then((response) => {
