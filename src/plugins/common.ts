@@ -1,7 +1,7 @@
 import FastifyStaticPlugin from '@fastify/static';
 import FastifyCookiePlugin from '@fastify/cookie';
 import FastifyFormbodyPlugin from '@fastify/formbody';
-import FastifyMultipartPlugin, {FastifyMultipartBaseOptions} from '@fastify/multipart';
+import FastifyMultipartPlugin from '@fastify/multipart';
 import FastifyCorsPlugin from '@fastify/cors';
 import fastifyHelmetPlugin from '@fastify/helmet';
 import {join} from 'path';
