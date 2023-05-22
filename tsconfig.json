@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.fastify.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "commonjs"
+  },
+  "include": ["./src/**/*.ts"],
+//  "references": [{ "path": "tsconfig.node.json" }],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.md"
+  ]
+}
