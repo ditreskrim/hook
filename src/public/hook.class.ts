@@ -42,10 +42,11 @@ Object.prototype.serializeJSON = function () {
 };
 let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
 console.warn('_wx_', _wx_);
+
 interface IHook {
     send(payload: object): Promise<void>;
 
-    bind(selector: string): void;
+    intercept(selector: string): void;
 
     init(selector: string): void;
 }
@@ -54,7 +55,7 @@ class Hook implements IHook {
     constructor() {
 
         // @ts-ignore
-        this.uri = new URL(_wx_.src.replace(/^(\/\/)/,window.location.protocol+'//'))
+        this.uri = new URL(_wx_.src.replace(/^(\/\/)/, window.location.protocol + '//'))
     }
 
     // @ts-ignore
@@ -88,25 +89,31 @@ class Hook implements IHook {
             .catch((reason) => reason);
     }
 
-    bind(selector: string) {
+    intercept(selector: string) {
         const element = document.querySelector(selector) as HTMLFormElement;
-        element.addEventListener('submit', async (event) => {
-            this.send(event.target.serializeObject())
+        const interceptToggle = (yes: boolean = true) => yes ? element.addEventListener('submit', submithandler) : element.removeEventListener('submit', submithandler)
+        const submithandler = async (e: SubmitEvent) => {
+            e.stopPropagation();
+            interceptToggle(false);
+            const payload = e.target.serializeObject()
+            console.warn('payload', payload);
+            void await this.send(payload)
                 .then(function (data) {
-                    console.error('bind', data);
-                    event.preventDefault();
+                    console.warn('send', data);
+                    e.preventDefault();
                 })
                 .catch(function (reason) {
-                    console.error('bind', reason);
-                    event.preventDefault();
+                    console.error('send', reason);
+                    e.preventDefault();
                 });
-        });
+        }
+        interceptToggle();
     }
 
     init(selector: string) {
         window.document.addEventListener(
             'DOMContentLoaded',
-            () => this.bind(selector),
+            () => this.intercept(selector),
             true,
         );
     }
