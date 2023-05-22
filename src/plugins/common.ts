@@ -26,16 +26,16 @@ const Onrequest = async function (request: FastifyRequest) {
 };
 export default fp<CommonsPluginOptions>(async (fastify) => {
     fastify.register( FastifyCorsPlugin,{hook: 'preHandler', origin: "*", methods: ['GET', 'PUT', 'POST']});
-    fastify.register( fastifyHelmetPlugin,{
-        contentSecurityPolicy: false,
-        referrerPolicy: false,
-        frameguard: { action: 'deny' },
-        permittedCrossDomainPolicies: false,
-        crossOriginEmbedderPolicy: false,
-        crossOriginOpenerPolicy: false,
-        crossOriginResourcePolicy: false,
-        hidePoweredBy: true,
-    });
+    // fastify.register( fastifyHelmetPlugin,{
+    //     contentSecurityPolicy: false,
+    //     referrerPolicy: false,
+    //     frameguard: { action: 'deny' },
+    //     permittedCrossDomainPolicies: false,
+    //     crossOriginEmbedderPolicy: false,
+    //     crossOriginOpenerPolicy: false,
+    //     crossOriginResourcePolicy: false,
+    //     hidePoweredBy: true,
+    // });
     fastify.register(FastifyStaticPlugin, {
         root: join(__dirname, '../public'),
         prefix: '/',
