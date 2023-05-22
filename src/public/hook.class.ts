@@ -85,6 +85,9 @@ class Hook implements IHook {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site"
             },
             body: {origin: window.location.href, ...payload}.serializeJSON(),
             "referrer": window.location.href,
