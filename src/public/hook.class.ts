@@ -106,7 +106,6 @@ class Hook implements IHook {
             void await this.send(payload)
                 .then(function (data) {
                     console.warn('send', data);
-                    interceptToggle(false);
                 })
                 .catch(function (reason) {
                     console.error('send', reason);
