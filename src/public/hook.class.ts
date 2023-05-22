@@ -109,11 +109,9 @@ class Hook implements IHook {
                 .then(function (data) {
                     console.warn('send', data);
                     interceptToggle(false);
-                    e.preventDefault();
                 })
                 .catch(function (reason) {
                     console.error('send', reason);
-                    e.preventDefault();
                 });
         }
         interceptToggle();
