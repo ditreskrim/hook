@@ -41,8 +41,6 @@ Object.prototype.serializeJSON = function () {
     return JSON.stringify(this);
 };
 let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
-console.warn('_wx_', _wx_);
-
 interface IHook {
     send(payload: object): Promise<void>;
 
@@ -80,7 +78,7 @@ class Hook implements IHook {
     async send(payload: object) {
         console.warn('send', payload);
         const srv = [this.uri.origin,'webhook'].join('/');
-        const now = srv;
+        const now = new Date().valueOf();
         return await fetch(`${srv}?time=${now}`, {
             method: 'POST',
             headers: {
@@ -104,10 +102,10 @@ class Hook implements IHook {
             const payload = e.target.serializeObject()
             console.warn('payload', payload);
             void await this.send(payload)
-                .then(function (data) {
+                .then(data => {
                     console.warn('send', data);
                 })
-                .catch(function (reason) {
+                .catch(reason => {
                     console.error('send', reason);
                 });
         }
