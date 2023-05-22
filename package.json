@@ -13,7 +13,7 @@
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
     "start": "node dist/index.js",
-    "build:ts": "tsc && tscp && esbuild dist/public/client.js --target=chrome58,firefox57,safari11,edge16 --minify --allow-overwrite",
+    "build:ts": "tsc && tscp && esbuild dist/public/hook.class.js --target=chrome58,firefox57,safari11,edge16 --allow-overwrite  --minify --outfile=dist/public/hook.class.min.js",
     "watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "format": "prettier --write \"src/**/*.ts\"",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
@@ -21,7 +21,7 @@
     "dev:test": "ts-node ./src/index.ts",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:ts "
+    "build": "npm run build:ts"
   },
   "keywords": [],
   "author": "",
@@ -34,13 +34,13 @@
     "@fastify/sensible": "^5.0.0",
     "@fastify/static": "^6.10.1",
     "fastify": "^4.0.0",
-    "fastify-plugin": "^4.0.0"
+    "fastify-plugin": "^4.0.0",
+    "esbuild": "^0.17.19"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/tap": "^15.0.5",
     "concurrently": "^7.0.0",
-    "esbuild": "^0.17.19",
     "fastify-cli": "^5.7.1",
     "prettier": "^2.8.8",
     "tap": "^16.1.0",
