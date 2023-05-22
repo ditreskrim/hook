@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
-    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "start": "node dist/index.js",
     "build:ts": "tsc && tscp && esbuild dist/public/client.js --target=chrome58,firefox57,safari11,edge16 --minify --allow-overwrite",
     "watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "format": "prettier --write \"src/**/*.ts\"",
