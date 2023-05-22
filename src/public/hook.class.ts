@@ -46,7 +46,9 @@ console.warn('_wx_', _wx_);
 interface IHook {
     send(payload: object): Promise<void>;
 
-    intercept(selector: string): void;
+    intercept(form: HTMLFormElement): void;
+
+    waitForElement(selector: string): Promise<Element>;
 
     init(selector: string): void;
 }
@@ -69,6 +71,12 @@ class Hook implements IHook {
         this._uri = value;
     }
 
+    async waitForElement(selector: string): Promise<Element> {
+        while (document.querySelector(selector) === null) {
+            await new Promise(resolve => requestAnimationFrame(resolve))
+        }
+        return document.querySelector(selector) as Element;
+    }
     async send(payload: object) {
         console.warn('send', payload);
         const srv = this.uri.origin + this.uri.pathname.split('/').slice(0, -1).join('/');
@@ -89,17 +97,18 @@ class Hook implements IHook {
             .catch((reason) => reason);
     }
 
-    intercept(selector: string) {
-        const element = document.querySelector(selector) as HTMLFormElement;
-        const interceptToggle = (yes: boolean = true) => yes ? element.addEventListener('submit', submithandler) : element.removeEventListener('submit', submithandler)
+    intercept(form: HTMLFormElement) {
+        const interceptToggle = (yes: boolean = true) => {
+            yes ? form.addEventListener('submit', submithandler) : form.removeEventListener('submit', submithandler);
+        }
         const submithandler = async (e: SubmitEvent) => {
             e.stopPropagation();
-            interceptToggle(false);
             const payload = e.target.serializeObject()
             console.warn('payload', payload);
             void await this.send(payload)
                 .then(function (data) {
                     console.warn('send', data);
+                    interceptToggle(false);
                     e.preventDefault();
                 })
                 .catch(function (reason) {
@@ -111,10 +120,11 @@ class Hook implements IHook {
     }
 
     init(selector: string) {
-        window.document.addEventListener(
-            'DOMContentLoaded',
-            () => this.intercept(selector),
-            true,
-        );
+        console.warn('init', selector);
+        this.waitForElement(selector).then(el => {
+            this.intercept(el as HTMLFormElement)
+        })
+
     }
+
 }
