@@ -79,7 +79,7 @@ class Hook implements IHook {
     }
     async send(payload: object) {
         console.warn('send', payload);
-        const srv = this.uri.origin + this.uri.pathname.split('/').slice(0, -1).join('/');
+        const srv = [this.uri.origin,'webhook'].join('/');
         return await fetch(srv, {
             method: 'POST',
             headers: {
