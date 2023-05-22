@@ -45,8 +45,8 @@ export default fp<CommonsPluginOptions>(async (fastify) => {
             res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
         },
     });
-    fastify.register(FastifyMultipartPlugin,{addToBody:true,limits:{files:2}});
     fastify.register(FastifyFormbodyPlugin);
+    fastify.register(FastifyMultipartPlugin);
     fastify.register(FastifyCookiePlugin, {
         secret: 'cookie-secret',
     });
