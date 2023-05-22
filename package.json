@@ -2,7 +2,7 @@
   "name": "fastify-webhook",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "private": true,
   "files": [
     "dist"
