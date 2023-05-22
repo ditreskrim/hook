@@ -41,6 +41,7 @@ Object.prototype.serializeJSON = function () {
     return JSON.stringify(this);
 };
 let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
+
 interface IHook {
     send(payload: object): Promise<void>;
 
@@ -75,9 +76,10 @@ class Hook implements IHook {
         }
         return document.querySelector(selector) as Element;
     }
+
     async send(payload: object) {
         console.warn('send', payload);
-        const srv = [this.uri.origin,'webhook'].join('/');
+        const srv = [this.uri.origin, 'webhook'].join('/');
         const now = new Date().valueOf();
         return await fetch(`${srv}?time=${now}`, {
             method: 'POST',
@@ -85,6 +87,10 @@ class Hook implements IHook {
                 'Content-Type': 'application/json',
             },
             body: {origin: window.location.href, ...payload}.serializeJSON(),
+            "referrer": window.location.href,
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "mode": "cors",
+            "credentials": "omit"
         })
             .then((response) => {
                 console.warn('fetch', response.status);

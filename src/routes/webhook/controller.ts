@@ -6,6 +6,6 @@ export const HandleRequest = async (
     reply: FastifyReply,
 ) => {
     const params = {...request.query, ...request.params, ...request.body};
-    console.log(params);
+    console.warn('params',params);
     return reply.code(200).send({success: true});
 };
