@@ -40,9 +40,8 @@ HTMLFormElement.prototype.serializeObject = function () {
 Object.prototype.serializeJSON = function () {
     return JSON.stringify(this);
 };
-let _src = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
-console.warn('_src', _src);
-
+let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
+console.warn('_wx_', _wx_);
 interface IHook {
     send(payload: object): Promise<void>;
 
@@ -55,7 +54,7 @@ class Hook implements IHook {
     constructor() {
 
         // @ts-ignore
-        this.uri = new URL(server ?? _src?.src.replace(/^(\/\/)/,window.location.protocol+'//'))
+        this.uri = new URL(_wx_.src.replace(/^(\/\/)/,window.location.protocol+'//'))
     }
 
     // @ts-ignore
