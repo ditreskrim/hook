@@ -1,5 +1,6 @@
 import fastify, {FastifyInstance, FastifyServerOptions} from 'fastify';
 import fastifyApp from './app';
+import * as process from "process";
 
 const default_options = {
     ignoreTrailingSlash: true,
@@ -10,16 +11,17 @@ const default_options = {
         },
     },
 };
-const buildApp = (options: FastifyServerOptions = default_options) => {
+const buildApp = (options: FastifyServerOptions = default_options): FastifyInstance => {
     const instance: FastifyInstance = fastify(options);
     void instance.register(fastifyApp);
     void instance.ready();
+    void instance.listen();
     return instance;
 };
-const app: FastifyInstance = buildApp();
+const app = buildApp();
 const handler = async function (req: Object, res: Object) {
-    void app.listen();
-    app.server.emit("request", req, res);
+    if (process.env.VERCEL_PROJECT_ID) app.server.emit("request", req, res);
+    return app
 }
-export {app,buildApp, handler,default_options}
+export {app, buildApp, handler, default_options}
 export default handler
