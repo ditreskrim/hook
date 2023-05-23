@@ -15,4 +15,4 @@ app.register(fastifyApp);
 export default async function (req:Object, res:Object){
     await app.ready();
     app.server.emit("request", req, res);
-};
+}
