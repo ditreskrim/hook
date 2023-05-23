@@ -10,9 +10,16 @@ const default_options = {
         },
     },
 };
-export const app: FastifyInstance = fastify(default_options);
-app.register(fastifyApp);
-export default async function (req:Object, res:Object){
-    await app.ready();
+const buildApp = (options: FastifyServerOptions = default_options) => {
+    const instance: FastifyInstance = fastify(options);
+    void instance.register(fastifyApp);
+    void instance.ready();
+    return instance;
+};
+const app: FastifyInstance = buildApp();
+const handler = async function (req: Object, res: Object) {
+    void app.listen();
     app.server.emit("request", req, res);
 }
+export {app,buildApp, handler,default_options}
+export default handler

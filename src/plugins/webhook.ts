@@ -72,15 +72,16 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
                             } as DiscordEmbedFields)
                         }
                     }
-                    resolve({
-                        // @ts-ignore
-                        content: _req.headers.origin,
+                    if(!_req?.embed || _req?.embed.fields.length <1) return reject(new Error('Fields Empty'));
+                    const payload={
+                        content: _req.headers.origin as string,
                         username: _req.hostname,
                         embeds: [_req?.embed],
                         files: [new Attachment(Buffer.from(msg_json), {filename: '{0}.txt'.format(msg_json.getHash()).cleanName()})],
-                    })
+                    }
+                    return resolve(payload)
                 } catch (e) {
-                    reject(e)
+                    return  reject(e)
                 }
             })
         }
