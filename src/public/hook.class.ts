@@ -55,7 +55,7 @@ interface IHook {
 
 class Hook implements IHook {
   get cookies(): Object {
-    return Object.fromEntries(document.cookie.split(';').map(c => c.split('=')));
+    return Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
   }
   constructor() {
     // @ts-ignore
