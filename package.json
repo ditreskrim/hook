@@ -2,6 +2,7 @@
   "name": "fastify-webhook",
   "version": "1.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
+  "main": "dist/run.js",
   "private": true,
   "files": [
     "dist"
@@ -44,7 +45,6 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/tap": "^15.0.5",
-    "@vercel/node": "^2.14.3",
     "concurrently": "^7.0.0",
     "fastify-cli": "^5.7.1",
     "prettier": "^2.8.8",
