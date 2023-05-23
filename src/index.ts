@@ -1,6 +1,5 @@
 import fastify, {FastifyInstance, FastifyServerOptions} from 'fastify';
 import fastifyApp from './app';
-const ServerlessHttp = require('serverless-http');
 
 const default_options = {
     ignoreTrailingSlash: true,
@@ -11,13 +10,9 @@ const default_options = {
         },
     },
 };
-const Instance = async (options: FastifyServerOptions = default_options) => {
-    const instance: FastifyInstance = fastify(options);
-    void instance.register(fastifyApp);
-    void instance.listen();
-    return instance;
+export const app: FastifyInstance = fastify(default_options);
+app.register(fastifyApp);
+export default async function (req:Object, res:Object){
+    await app.ready();
+    app.server.emit("request", req, res);
 };
-export const InstanceApp = Instance();
-export default Instance;
-export {Instance, default_options};
-module.exports.handler = ServerlessHttp(InstanceApp)
