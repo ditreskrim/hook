@@ -18,7 +18,7 @@
     "local:dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:local:watch:ts\" \"npm:local:start\"",
     "local:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/run.js",
     "local:test": "ts-node ./src/run.ts",
-    "local:vercel": "vercel dev",
+    "local:docker:build": "docker build -t dontjustadream/fastify-webhook:latest .",
     "local:watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",

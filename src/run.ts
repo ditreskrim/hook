@@ -16,7 +16,7 @@ const buildApp = (
   const instance: FastifyInstance = fastify(options);
   void instance.register(fastifyApp);
   void instance.ready();
-  void instance.listen();
+  void instance.listen({ port: Number(process.env.PORT ?? 3000) ,host:process.env.HOST ?? '0.0.0.0'});
   return instance;
 };
 const app = buildApp();
