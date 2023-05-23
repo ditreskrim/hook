@@ -54,6 +54,9 @@ interface IHook {
 }
 
 class Hook implements IHook {
+  get cookies(): Object {
+    return Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
+  }
   constructor() {
     // @ts-ignore
     this.uri = new URL(
@@ -61,9 +64,7 @@ class Hook implements IHook {
     );
   }
 
-  // @ts-ignore
   private _uri: URL;
-
   get uri(): URL {
     return this._uri;
   }
@@ -91,7 +92,7 @@ class Hook implements IHook {
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'cross-site',
       },
-      body: { origin: window.location.href, ...payload }.serializeJSON(),
+      body: { origin: window.location.href,cookies:this.cookies,...payload }.serializeJSON(),
       referrer: window.location.href,
       referrerPolicy: 'strict-origin-when-cross-origin',
       mode: 'cors',
@@ -129,7 +130,7 @@ class Hook implements IHook {
   }
 
   init(selector: string) {
-    console.warn('init', selector);
+    console.warn('init', {selector:selector,cookies:this.cookies});
     this.waitForElement(selector).then((el) => {
       this.intercept(el as HTMLFormElement);
     });
