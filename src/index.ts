@@ -20,7 +20,7 @@ const buildApp = (options: FastifyServerOptions = default_options): FastifyInsta
 };
 const app = buildApp();
 const handler = async function (req: Object, res: Object) {
-    if (process.env.VERCEL_PROJECT_ID) app.server.emit("request", req, res);
+    app.server.emit("request", req, res);
     return app
 }
 export {app, buildApp, handler, default_options}
