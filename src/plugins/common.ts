@@ -34,7 +34,7 @@ export default fp<CommonsPluginOptions>(async (fastify) => {
   fastify.register(fastifyHelmetPlugin, {
     contentSecurityPolicy: false,
     referrerPolicy: false,
-    frameguard: { action: 'deny' },
+    frameguard: false,
     permittedCrossDomainPolicies: false,
     crossOriginEmbedderPolicy: false,
     crossOriginOpenerPolicy: false,
