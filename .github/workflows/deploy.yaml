@@ -9,7 +9,7 @@ on:
       - main
 jobs:
   Deploy-Production:
-    if: env.VERCEL_TOKEN != ''
+    if: ${{ secrets.VERCEL_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
