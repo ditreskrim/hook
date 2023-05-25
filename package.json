@@ -11,9 +11,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "test": "yarn build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
     "start": "node dist/run.js",
-    "build:ts": "tsc && tscp && esbuild dist/public/hook.class.js --target=chrome58,firefox57,safari11,edge16 --allow-overwrite  --minify --outfile=dist/public/hook.class.min.js",
+    "build:ts": "tsc && tscp && esbuild dist/public/hook.class.js --target=chrome58 --allow-overwrite  --minify --outfile=dist/public/hook.class.min.js",
     "local:format": "prettier --write \"src/**/*.ts\"",
     "local:dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:local:watch:ts\" \"npm:local:start\"",
     "local:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/run.js",
@@ -22,7 +22,8 @@
     "local:watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "build": "npm run build:ts"
+    "build": "yarn  build:ts",
+    "vercel:start": "vercel dev"
   },
   "keywords": [],
   "author": "",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/tap": "^15.0.5",
+    "@vercel/node": "^2.14.3",
     "concurrently": "^7.0.0",
     "fastify-cli": "^5.7.1",
     "prettier": "^2.8.8",
