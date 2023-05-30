@@ -12,5 +12,9 @@
       "dest": "dist/vercel.js"
     }
   ],
+  "crons": [{
+    "path": "/cron",
+    "schedule": "0 10 * * *"
+  }],
   "outputDirectory": "dist"
 }

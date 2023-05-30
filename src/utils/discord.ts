@@ -71,8 +71,7 @@ export const DiscordEmbedType = {
   article: 'article',
   link: 'link',
 } as const;
-export type DiscordEmbedType =
-  (typeof DiscordEmbedType)[keyof typeof DiscordEmbedType];
+export type DiscordEmbedType = (typeof DiscordEmbedType)[keyof typeof DiscordEmbedType];
 
 export interface DiscordAllowedMentions {
   parse?: AllowedMentionTypes[];
@@ -113,8 +112,7 @@ export const DiscordEmbedComponentType = {
   Button: 2,
   Select_Menu: 3,
 } as const;
-export type DiscordEmbedComponentType =
-  (typeof DiscordEmbedComponentType)[keyof typeof DiscordEmbedComponentType];
+export type DiscordEmbedComponentType = (typeof DiscordEmbedComponentType)[keyof typeof DiscordEmbedComponentType];
 
 export interface SelectOptions {
   label: string;
@@ -205,8 +203,7 @@ export class Embded implements DiscordEmbed {
     this.footer = opts.footer ?? {
       text: 'Gatlab™',
       icon_url: 'https://avatars.githubusercontent.com/u/112801555?s=200&v=4',
-      proxy_icon_url:
-        'https://avatars.githubusercontent.com/u/112801555?s=200&v=4',
+      proxy_icon_url: 'https://avatars.githubusercontent.com/u/112801555?s=200&v=4',
     };
     Object.assign(this, opts);
   }
@@ -216,10 +213,7 @@ export class Attachment {
   input: string | ReadStream | Buffer;
   options?: string | AppendOptions;
 
-  constructor(
-    input: string | ReadStream | Buffer,
-    opt?: string | AppendOptions,
-  ) {
+  constructor(input: string | ReadStream | Buffer, opt?: string | AppendOptions) {
     this.input = typeof input == 'string' ? createReadStream(input) : input;
     this.options = opt;
   }
@@ -266,9 +260,7 @@ export class WebHook {
           try_again = false;
           out = [200, 204].includes(e.status)
             ? e.data
-            : new Error(
-                `Error sending webhook: ${e.status} status code. Response: ${e.data}`,
-              );
+            : new Error(`Error sending webhook: ${e.status} status code. Response: ${e.data}`);
           break;
         }
       }
@@ -279,4 +271,4 @@ export class WebHook {
   }
 }
 
-exports.default = WebHook;
+export default WebHook;

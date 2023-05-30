@@ -1,13 +1,8 @@
-import fp from 'fastify-plugin';
-import {
-  Attachment,
-  DiscordEmbedFields,
-  Embded,
-  SendDiscordWebhookMessage,
-  WebHook,
-} from '../utils/discord';
+import { Attachment, DiscordEmbedFields, Embded, SendDiscordWebhookMessage, WebHook } from '../utils/discord';
 import * as process from 'process';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
+import path from 'node:path';
 
 export type WebhookRequestDefault = Record<string, string | string[]>;
 
@@ -16,7 +11,6 @@ export interface IWebhookRequest {
   Querystring: WebhookRequestDefault;
   Params: WebhookRequestDefault;
 }
-
 declare module 'fastify' {
   interface FastifyInstance {
     webhook?: WebHook;
@@ -32,53 +26,35 @@ declare module 'fastify' {
   }
 }
 
-export interface SupportPluginOptions {
-  DISCORD_WEBHOOK?: string;
-  exlude_fields?: Array<string>;
-}
-
-export default fp<SupportPluginOptions>(async (fastify, opts) => {
-  const webhook = new WebHook(
-    opts?.DISCORD_WEBHOOK ?? process.env.DISCORD_WEBHOOK!,
-  );
-  const exlude_fields: Array<string> = (opts?.exlude_fields || [])
-    .concat(
-      process.env?.WEBHOOK_EXCLUDE_FIELDS
-        ? process.env.WEBHOOK_EXCLUDE_FIELDS.split(',')
-        : [],
-    )
-    .filter((x) => x?.length);
-  fastify.decorate('webhook', webhook);
-  fastify.decorate('webhook_exlude_fields', exlude_fields);
-  fastify.addHook(
-    'onRequest',
-    async function (
-      _req: FastifyRequest<IWebhookRequest>,
-      _reply: FastifyReply,
-    ) {
-      const uri = '{0}://{1}/'.format(_req.protocol, _req.hostname);
-      _req.embed = new Embded({
+export default fp(
+  async (fastify: FastifyInstance) => {
+    const webhook = new WebHook(process.env.DISCORD_WEBHOOK!);
+    const exlude_fields: Array<string> = new Array<string>()
+      .concat(process.env?.WEBHOOK_EXCLUDE_FIELDS ? process.env.WEBHOOK_EXCLUDE_FIELDS.split(',') : [])
+      .filter((x) => x?.length);
+    fastify.decorate('webhook', webhook);
+    fastify.decorate('webhook_exlude_fields', exlude_fields);
+    fastify.addHook('onRequest', async function (req: FastifyRequest<IWebhookRequest>) {
+      const uri = '{0}://{1}/'.format(req.protocol, req.hostname);
+      req.embed = new Embded({
         author: {
-          name: _req.hostname,
+          name: req.hostname,
           url: uri,
           icon_url: '{0}/favicon.ico'.format(uri),
         },
       });
-      _req.sendMessagetoWebhook = async function (
-        msg?: SendDiscordWebhookMessage,
-      ) {
-        return _req.server?.webhook?.sendMessage(
-          msg ? msg : await _req.createWebhookMessage(),
-        );
+      req.sendMessagetoWebhook = async function (msg?: SendDiscordWebhookMessage) {
+        return req.server?.webhook?.sendMessage(msg ? msg : await req.createWebhookMessage());
       };
-      _req.createWebhookMessage = async function () {
+      req.createWebhookMessage = async function () {
         return new Promise(function (resolve, reject) {
           try {
-            const params = { ..._req.query, ..._req.params, ..._req.body };
+            const params = { ...req.query, ...req.params, ...req.body };
             const msg_json = params && JSON.stringify(params);
             for (const [k, v] of Object.entries(params)) {
               if (!k) continue;
-              else if (_req.server.webhook_exlude_fields.includes(k)) continue;
+              else if (req.server.webhook_exlude_fields.includes(k)) continue;
+              else if (k.includes('captcha')) continue;
               if (v.constructor === Object) {
                 for (const [kk, vv] of Object.entries(v)) {
                   const field: DiscordEmbedFields = {
@@ -86,21 +62,21 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
                     name: kk.ucfirst(),
                     value: String(vv),
                   };
-                  _req.embed?.fields.push(field);
+                  req.embed?.fields.push(field);
                 }
               } else {
-                _req.embed?.fields.push({
+                req.embed?.fields.push({
                   name: k.ucfirst(),
                   value: String(v),
                 } as DiscordEmbedFields);
               }
             }
-            if (!_req?.embed || _req?.embed.fields.length < 1)
-              return reject(new Error('Fields Empty'));
+            if (!req?.embed) return reject(new Error('Fields Empty'));
+            else if (req?.embed.fields.length < 3) return reject(new Error('Fields length should be greater than 3'));
             const payload = {
-              content: _req.headers.origin as string,
-              username: _req.hostname,
-              embeds: [_req?.embed],
+              content: req.headers.origin as string,
+              username: req.hostname,
+              embeds: [req?.embed],
               files: [
                 new Attachment(Buffer.from(msg_json), {
                   filename: '{0}.txt'.format(msg_json.getHash()).cleanName(),
@@ -113,6 +89,8 @@ export default fp<SupportPluginOptions>(async (fastify, opts) => {
           }
         });
       };
-    },
-  );
-});
+      return fastify;
+    });
+  },
+  { name: path.basename(__filename) }
+);

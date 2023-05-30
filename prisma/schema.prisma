@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // uses connection pooling
+}
+
+// datasource db {
+//   provider          = "postgresql"
+//   url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+//   directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+//   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+// }
+
+model User {
+  id         Int           @id @default(autoincrement())
+  username   String        @unique
+  email      String        @unique
+  password   String
+  salt       String
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  persons    UserPersons[]
+
+  @@map("users")
+}
+
+model Person {
+  id         Int            @id @default(autoincrement())
+  firstname  String
+  middlename String?
+  lastname   String
+  dob        String?
+  user       UserPersons?
+  gender     PersonGenders?
+  emails     Email[]        @relation(name: "PersonEmails")
+  contacts   Contact[]      @relation(name: "PersonContacts")
+  banks      Bank[]         @relation(name: "PersonBanks")
+  cards      Card[]         @relation(name: "PersonCards")
+  accounts   Account[]      @relation(name: "PersonAccounts")
+  documents  Document[]     @relation(name: "PersonDocuments")
+  phones     Phone[]        @relation(name: "PersonPhones")
+  browsers   Browser[]      @relation(name: "PersonBrowsers")
+  passwords  Password[]     @relation(name: "PersonPasswords")
+  created_at DateTime       @default(now())
+  updated_at DateTime       @default(now())
+
+  @@unique([firstname, middlename, lastname, dob])
+  @@map("persons")
+}
+
+model Contact {
+  id         Int      @id @default(autoincrement())
+  address1   String?
+  address2   String?
+  city       String?
+  state      String?
+  zip        String?
+  country    String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  persons    Person[] @relation(name: "PersonContacts")
+  phones     Phone[]  @relation(name: "ContactPhones")
+  emails     Email[]  @relation(name: "ContactEmails")
+
+  @@unique([address1, address2, city, state, zip, country])
+  @@map("contacts")
+}
+
+model Bank {
+  id         Int      @id @default(autoincrement())
+  number     String
+  name       String?
+  country    String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  persons    Person[] @relation(name: "PersonBanks")
+
+  @@unique([number, name, country])
+  @@map("banks")
+}
+
+model Card {
+  id           Int      @id @default(autoincrement())
+  number       String
+  type         String?
+  expire_month String
+  expire_year  String
+  cvc          String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  persons      Person[] @relation(name: "PersonCards")
+
+  @@unique([number, expire_month, expire_year, cvc])
+  @@map("cards")
+}
+
+model Account {
+  id         Int      @id @default(autoincrement())
+  url        String
+  username   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  persons    Person[] @relation(name: "PersonAccounts")
+
+  @@unique([url, username])
+  @@map("accounts")
+}
+
+model Browser {
+  id         Int      @id @default(autoincrement())
+  useragent  String
+  os         String?
+  ip         String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  persons    Person[] @relation(name: "PersonBrowsers")
+
+  @@unique([useragent, os, ip])
+  @@map("browsers")
+}
+
+model Password {
+  id         Int      @id @default(autoincrement())
+  password   String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  emails     Email[]  @relation(name: "EmailPasswords")
+  persons    Person[] @relation(name: "PersonPasswords")
+
+  @@map("passwords")
+}
+
+model Gender {
+  id         Int            @id @default(autoincrement())
+  type       String         @unique
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+  persons    PersonGenders?
+
+  @@map("genders")
+}
+
+model Phone {
+  id         Int       @id @default(autoincrement())
+  number     String    @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  persons    Person[]  @relation(name: "PersonPhones")
+  contacts   Contact[] @relation(name: "ContactPhones")
+
+  @@map("phones")
+}
+
+model Email {
+  id         Int        @id @default(autoincrement())
+  address    String     @unique
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  persons    Person[]   @relation(name: "PersonEmails")
+  passwords  Password[] @relation(name: "EmailPasswords")
+  contacts   Contact[]  @relation(name: "ContactEmails")
+
+  @@map("emails")
+}
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  number     String
+  type       String
+  country    String?
+  expire     String?
+  blob       Bytes?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  persons    Person[] @relation(name: "PersonDocuments")
+
+  @@unique([number, type, country, expire, blob])
+  @@map("documents")
+}
+
+model UserPersons {
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int      @unique
+  person      Person   @relation(fields: [person_id], references: [id])
+  person_id   Int      @unique
+  assigned_at DateTime @default(now())
+
+  @@id([user_id, person_id])
+  @@unique([user_id, person_id])
+  @@map("_UserPersons")
+}
+
+model PersonGenders {
+  person      Person   @relation(fields: [person_id], references: [id])
+  person_id   Int      @unique
+  gender      Gender   @relation(fields: [gender_id], references: [id])
+  gender_id   Int      @unique
+  assigned_at DateTime @default(now())
+
+  @@id([person_id, gender_id])
+  @@unique([person_id, gender_id])
+  @@map("_PersonGenders")
+}

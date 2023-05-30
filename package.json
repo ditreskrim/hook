@@ -11,6 +11,7 @@
     "test": "test"
   },
   "scripts": {
+    "postinstall": "prisma generate",
     "test": "yarn build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
     "start": "node dist/run.js",
     "build:ts": "tsc && tscp && esbuild dist/public/hook.class.js --target=chrome58 --allow-overwrite  --minify --outfile=dist/public/hook.class.min.js",
@@ -22,7 +23,10 @@
     "local:watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "build": "yarn  build:ts",
+    "build": "yarn  build:ts ",
+    "local:prisma:generate": "prisma generate",
+    "local:prisma:migrate": "npx prisma migrate dev",
+    "local:prisma:push": "npx prisma db push",
     "vercel:start": "vercel dev"
   },
   "keywords": [],
@@ -34,6 +38,7 @@
     "@fastify/cors": "^8.2.1",
     "@fastify/formbody": "^7.4.0",
     "@fastify/helmet": "^10.1.1",
+    "@fastify/jwt": "^7.0.0",
     "@fastify/multipart": "^7.6.0",
     "@fastify/one-line-logger": "^1.2.0",
     "@fastify/sensible": "^5.0.0",
@@ -42,6 +47,7 @@
     "esbuild": "^0.17.19",
     "fastify": "^4.0.0",
     "fastify-plugin": "^4.0.0",
+    "fastify-zod": "^1.3.2",
     "form-data": "^4.0.0"
   },
   "devDependencies": {
@@ -51,6 +57,7 @@
     "concurrently": "^7.0.0",
     "fastify-cli": "^5.7.1",
     "prettier": "^2.8.8",
+    "prisma": "^4.14.1",
     "tap": "^16.1.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4",
