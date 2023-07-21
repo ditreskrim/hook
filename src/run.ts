@@ -7,9 +7,9 @@ const default_options = {
   caseSensitive: false,
   logger: {
     transport: {
-      target: '@fastify/one-line-logger',
-    },
-  },
+      target: '@fastify/one-line-logger'
+    }
+  }
 };
 
 const buildApp = (options: FastifyServerOptions = default_options): FastifyInstance => {
@@ -18,12 +18,12 @@ const buildApp = (options: FastifyServerOptions = default_options): FastifyInsta
   void instance.ready();
   void instance.listen({
     port: Number(process.env.PORT ?? 3000),
-    host: process.env.HOST ?? (is_docker() ? '0.0.0.0' : ''),
+    host: process.env.HOST ?? (is_docker() ? '0.0.0.0' : '')
   });
   return instance;
 };
 const app = buildApp();
-const handler = async function (_req: Object, _res: Object) {
+const handler = async function(_req: Object, _res: Object) {
   return app;
 };
 export { app, buildApp, handler, default_options };

@@ -41,11 +41,14 @@ export interface DiscordEmbedFooter {
   proxy_icon_url?: string;
 }
 
-export interface DiscordEmbedImage extends DiscordEmbedLinkedMediaContent {}
+export interface DiscordEmbedImage extends DiscordEmbedLinkedMediaContent {
+}
 
-export interface DiscordEmbedThumbnail extends DiscordEmbedLinkedMediaContent {}
+export interface DiscordEmbedThumbnail extends DiscordEmbedLinkedMediaContent {
+}
 
-export interface DiscordEmbedVideo extends DiscordEmbedLinkedMediaContent {}
+export interface DiscordEmbedVideo extends DiscordEmbedLinkedMediaContent {
+}
 
 export interface DiscordEmbedProvider extends DiscordEmbedLinkedComponent {
   name?: string;
@@ -69,7 +72,7 @@ export const DiscordEmbedType = {
   video: 'video',
   gifv: 'gifv',
   article: 'article',
-  link: 'link',
+  link: 'link'
 } as const;
 export type DiscordEmbedType = (typeof DiscordEmbedType)[keyof typeof DiscordEmbedType];
 
@@ -110,7 +113,7 @@ export type DiscordComponent =
 export const DiscordEmbedComponentType = {
   Action_Row: 1,
   Button: 2,
-  Select_Menu: 3,
+  Select_Menu: 3
 } as const;
 export type DiscordEmbedComponentType = (typeof DiscordEmbedComponentType)[keyof typeof DiscordEmbedComponentType];
 
@@ -203,7 +206,7 @@ export class Embded implements DiscordEmbed {
     this.footer = opts.footer ?? {
       text: 'Gatlab™',
       icon_url: 'https://avatars.githubusercontent.com/u/112801555?s=200&v=4',
-      proxy_icon_url: 'https://avatars.githubusercontent.com/u/112801555?s=200&v=4',
+      proxy_icon_url: 'https://avatars.githubusercontent.com/u/112801555?s=200&v=4'
     };
     Object.assign(this, opts);
   }
@@ -220,7 +223,7 @@ export class Attachment {
 }
 
 const delay = (ms: number) =>
-  new Promise<void>(function (resolve) {
+  new Promise<void>(function(resolve) {
     setTimeout(resolve, ms);
   });
 

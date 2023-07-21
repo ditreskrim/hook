@@ -7,9 +7,9 @@ const default_options: FastifyServerOptions = {
   caseSensitive: false,
   logger: {
     transport: {
-      target: '@fastify/one-line-logger',
-    },
-  },
+      target: '@fastify/one-line-logger'
+    }
+  }
 };
 const buildApp = (options: FastifyServerOptions = default_options): FastifyInstance => {
   const instance: FastifyInstance = fastify(options);
@@ -17,7 +17,7 @@ const buildApp = (options: FastifyServerOptions = default_options): FastifyInsta
   return instance;
 };
 const app = buildApp();
-const handler = async function (_req: Object, _res: Object) {
+const handler = async function(_req: Object, _res: Object) {
   await app.ready();
   void app.server.emit('request', _req, _res);
   return app;

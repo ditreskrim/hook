@@ -5,6 +5,7 @@ declare global {
     whois?: Function;
     whois_data?: object;
   }
+
   // @ts-ignore
   interface HTMLDocument {
     // add you custom properties and methods
@@ -12,14 +13,15 @@ declare global {
   }
 
   interface HTMLFormElement {
-    serializeObject(): object;
+    formSerializeObject(): object;
   }
+
   interface FormData {
-    serializeObject(): object;
+    serializeObjectForm(): object;
   }
 
   interface Object {
-    serializeJSON(): string;
+    JsonStringify(): string;
   }
 
   interface SubmitEvent {

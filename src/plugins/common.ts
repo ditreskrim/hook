@@ -22,7 +22,7 @@ const Onrequest = async function(request: FastifyRequest) {
 };
 export default fp(
   async (fastify) => {
-    fastify.register(fastifyQsPlugin, { });
+    fastify.register(fastifyQsPlugin, {});
 
     fastify.register(FastifyCorsPlugin, {
       hook: 'preHandler',
@@ -31,11 +31,11 @@ export default fp(
         return;
       },
       methods: ['GET', 'PUT', 'POST', 'OPTIONS'],
-      allowedHeaders: ['Origin','Accept','Content-Type', 'Access-Control-Allow-Headers', 'Authorization', 'X-Requested-With', 'observe'],
+      allowedHeaders: ['Origin', 'Accept', 'Content-Type', 'Access-Control-Allow-Headers', 'Authorization', 'X-Requested-With', 'observe']
     });
     fastify.register(fastifyHelmetPlugin, {
       contentSecurityPolicy: false,
-      referrerPolicy: {policy: 'strict-origin-when-cross-origin'},
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
       frameguard: false,
       permittedCrossDomainPolicies: false,
       crossOriginEmbedderPolicy: false,

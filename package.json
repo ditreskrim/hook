@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "yarn build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
     "start": "node dist/run.js",
     "build:ts": "tsc && tscp && esbuild dist/public/hook.class.js --target=chrome58 --allow-overwrite  --keep-names  --minify --outfile=dist/public/hook.class.min.js",
     "local:format": "prettier --write \"src/**/*.ts\"",
@@ -22,11 +22,11 @@
     "local:watch:ts": "tsc --watch --preserveWatchOutput --pretty",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "build": "rimraf dist && yarn  build:ts ",
-    "local:prisma:generate": "prisma generate",
+    "build": "rimraf dist && npm run  build:ts ",
+    "local:prisma:generate": "npx prisma generate",
     "local:prisma:migrate": "npx prisma migrate dev",
     "local:prisma:push": "npx prisma db push",
-    "vercel:prod": "yarn build && vercel --prod",
+    "vercel:prod": "npm run build && vercel --prod",
     "vercel:dev": "vercel dev"
   },
   "keywords": [],
@@ -52,7 +52,8 @@
     "fastify-plugin": "^4.0.0",
     "fastify-qs": "^4.0.2",
     "fastify-zod": "^1.3.2",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "forwarded-for": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

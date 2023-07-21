@@ -5,10 +5,10 @@ export const identifierSchema = {
   properties: {
     id: {
       type: 'number',
-      description: 'the unique identifier',
-    },
+      description: 'the unique identifier'
+    }
   },
-  required: ['id'],
+  required: ['id']
 };
 
 export function TryCatch(fn: Function) {
@@ -19,12 +19,13 @@ export function TryCatch(fn: Function) {
     return false;
   }
 }
+
 export const is_docker = (): boolean =>
-  TryCatch(function () {
+  TryCatch(function() {
     if (!fs.existsSync('/.dockerenv')) return false;
     return !!fs.statSync('/.dockerenv');
   }) ||
-  TryCatch(function () {
+  TryCatch(function() {
     if (!fs.existsSync('/proc/self/cgroup')) return false;
     return fs.readFileSync('/proc/self/cgroup', 'utf8').includes('docker');
   });

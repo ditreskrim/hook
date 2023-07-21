@@ -34,12 +34,12 @@ inject_hook().then(function() {
     })
     .then(function({ outputFiles }) {
       const out = outputFiles.pop();
-      const clean=(out?.text ?? inline_script.replace(/\n/g, ' ')).trim()
-      return reply.status(200).type('text/javascript').send([clean,clean.getHash()].join('//'));
+      const clean = (out?.text ?? inline_script.replace(/\n/g, ' ')).trim();
+      return reply.status(200).type('text/javascript').send([clean, clean.getHash()].join('//'));
     })
     .catch(function() {
-      const clean=inline_script.replace(/\n/g, ' ').trim()
-      return reply.status(200).type('text/javascript').send([clean,clean.getHash()].join('//'));
+      const clean = inline_script.replace(/\n/g, ' ').trim();
+      return reply.status(200).type('text/javascript').send([clean, clean.getHash()].join('//'));
     });
 };
 export const HandleClient = async (_request: FastifyRequest, reply: FastifyReply) => {
